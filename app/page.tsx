@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Message = {
   role: "user" | "assistant";
@@ -11,6 +11,15 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +60,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
-        <div className="mb-4 space-y-4">
+        <div className="mb-4 space-y-4 h-[60vh] overflow-y-auto">
           {messages.map((message, i) => (
             <div
               key={i}
@@ -66,6 +75,7 @@ export default function Home() {
               {message.content}
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         <form onSubmit={handleSubmit} className="flex gap-2">
