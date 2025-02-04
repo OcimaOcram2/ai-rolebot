@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
         const conversationHistory = message.map(msg => 
             `${msg.role === 'user' ? 'Irene' : 'Marco'}: ${msg.content}`
-        ).join('\n');
+        ).join('\n'); 
 
         const systemPrompt = `[SISTEMA: Sei Marco, un Dungeon Master esperto. Segui queste regole:
         1. PARLA SEMPRE IN ITALIANO
