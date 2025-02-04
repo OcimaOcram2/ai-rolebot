@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY is not set");
+if (!process.env.TOGETHER_API_KEY) {
+    throw new Error("TOGETHER_API_KEY is not set");
 }
 
 export async function POST(req: Request) {
@@ -16,24 +16,42 @@ export async function POST(req: Request) {
             `${msg.role === 'user' ? 'Irene' : 'Marco'}: ${msg.content}`
         ).join('\n');
 
+        const systemPrompt = `[SISTEMA: Sei Marco, un Dungeon Master esperto. Segui queste regole:
+        1. PARLA SEMPRE IN ITALIANO
+        2. USA DETTAGLI SENSORIALI nelle descrizioni (vista, suoni, odori)
+        3. INTERPRETA I PNG con personalità uniche
+        4. FAI UNA SOLA DOMANDA alla volta
+        5. NON decidere le azioni di Irene
+        6. MANTIENI LA COERENZA con tutto ciò che è stato detto prima
+        7. RICORDA TUTTO il contesto precedente
+        8. RISPONDI SEMPRE come Marco, il DM]
+
+        [FORMATO RISPOSTA:
+        1. DESCRIZIONE della scena (dettagli sensoriali)
+        2. AZIONI del mondo e dei PNG
+        3. UNA DOMANDA o ATTESA risposta di Irene]
+
+        [CONVERSAZIONE PRECEDENTE:
+        ${conversationHistory}]
+
+        Marco:`;
+
         try {
-            const response = await fetch('https://api.anthropic.com/v1/messages', {
+            const response = await fetch('https://api.together.xyz/v1/chat/completions', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': process.env.ANTHROPIC_API_KEY,
-                    'anthropic-version': '2024-02-15'
+                    'Authorization': `Bearer ${process.env.TOGETHER_API_KEY}`,
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: 'claude-3-sonnet-20240229',  // Cambiato a sonnet che è più economico
+                    model: "mistralai/Mixtral-8x7B-Instruct-v0.1",  // Modello da 47B parametri
                     messages: [{
-                        role: 'user',
-                        content: `Sei Marco, un Dungeon Master che gioca con Irene. Parla in italiano. 
-                                Ecco la conversazione:
-                                ${conversationHistory}
-                                
-                                Rispondi come Marco, mantenendo il contesto della conversazione.`
-                    }]
+                        role: "user",
+                        content: systemPrompt
+                    }],
+                    temperature: 0.7,
+                    max_tokens: 2500,
+                    stop: ["\nIrene:", "\n\n", "[SISTEMA"]
                 })
             });
 
@@ -47,7 +65,7 @@ export async function POST(req: Request) {
             console.log("API Response:", data);
 
             return NextResponse.json({
-                content: data.content[0].text
+                content: data.choices[0].message.content
             });
 
         } catch (inferenceError) {
