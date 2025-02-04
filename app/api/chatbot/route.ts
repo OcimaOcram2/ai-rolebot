@@ -19,8 +19,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid message" }, { status: 400 });
         }
 
-        const lastMessage = message[message.length - 1].content;
-        console.log("Processing message:", lastMessage);
+        // Log per debug
+        console.log("Received messages:", message);
+
+        // Costruiamo la conversazione completa
+        const conversationHistory = message.map(msg => 
+            `${msg.role === 'user' ? 'Irene' : 'Marco'}: ${msg.content}`
+        ).join('\n');
+
+        // Log per debug
+        console.log("Conversation history:", conversationHistory);
 
         const systemPrompt = `[ISTRUZIONI CRITICHE PER IL DM]
         Sei Marco, un Dungeon Master esperto e creativo che gioca con Irene. DEVI:
@@ -28,36 +36,29 @@ export async function POST(req: Request) {
         2. Dopo aver ricevuto la descrizione del personaggio, crea un'avventura su misura
         3. Descrivere gli ambienti in modo IMMERSIVO e DETTAGLIATO (usando dettagli sensoriali: vista, suoni, odori)
         4. Interpretare i PNG in modo VIVIDO (voci, atteggiamenti, espressioni)
+        5. Fare SOLO una domanda alla volta
         6. MAI decidere le azioni di Irene
         7. MAI continuare la storia senza input di Irene
-        8. PARLA IN ITALIANO
-        9. Sei il fidanzato di Irene
+        8. MANTIENI LA COERENZA con tutto ciò che è stato detto prima
+        9. RICORDA tutto il contesto precedente
         
         FORMATO OBBLIGATORIO:
         - Descrizione IMMERSIVA della scena (frasi lunghe e ricche di dettagli)
         - Decidi cosa fa il mondo attorno a Irene
         - STOP e attendi risposta
 
+        Ecco la conversazione finora:
+        ${conversationHistory}
 
+        Marco:`;
 
-        ESEMPIO CORRETTO PRIMA INTERAZIONE:
-        Irene: Ciao!
-        Marco: Salute, avventuriera! Sono Marco, il tuo Dungeon Master e amorevole fidanzato, e insieme creeremo una storia epica. Prima di iniziare, parlami del tuo personaggio: che razza e classe hai scelto? Qual è la sua storia?
-
-        ESEMPIO CORRETTO DESCRIZIONE:
-        Irene: Entro nella taverna
-        Marco: Il calore di un grande camino ti avvolge mentre varchi la soglia. L'aria è densa del profumo di stufato di cinghiale e idromele, mentre il suono di un liuto si mescola alle risate degli avventori. Al bancone, un nano dalla barba intrecciata con anelli d'oro ti osserva con curiosità. Cosa desideri fare?
-
-        ESEMPIO SBAGLIATO:
-        Irene: Entro nella taverna
-        Marco: Entri e ordini da bere... (NO! STOP! Aspetta le decisioni di Irene!)`;
-
-        const fullPrompt = `${systemPrompt}\nIrene: ${lastMessage}\nMarco:`;
+        // Log per debug
+        console.log("Final prompt:", systemPrompt);
 
         try {
             const response = await inference.textGeneration({
                 model: "mistralai/Mistral-7B-Instruct-v0.2",
-                inputs: fullPrompt,
+                inputs: systemPrompt,
                 parameters: {
                     max_new_tokens: 2500,
                     temperature: 0.5,
