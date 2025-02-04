@@ -1,15 +1,8 @@
-import { HfInference } from '@huggingface/inference';
 import { NextResponse } from "next/server";
 
-if (!process.env.HUGGING_FACE_TOKEN) {
-    throw new Error("HUGGING_FACE_TOKEN is not set");
+if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error("ANTHROPIC_API_KEY is not set");
 }
-
-const inference = new HfInference(process.env.HUGGING_FACE_TOKEN);
-
-type ErrorResponse = {
-    message: string;
-};
 
 export async function POST(req: Request) {
     try {
@@ -19,16 +12,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid message" }, { status: 400 });
         }
 
-        // Log per debug
-        console.log("Received messages:", message);
-
-        // Costruiamo la conversazione completa
         const conversationHistory = message.map(msg => 
             `${msg.role === 'user' ? 'Irene' : 'Marco'}: ${msg.content}`
         ).join('\n');
-
-        // Log per debug
-        console.log("Conversation history:", conversationHistory);
 
         const systemPrompt = `[ISTRUZIONI CRITICHE PER IL DM]
         Sei Marco, un Dungeon Master esperto e creativo che gioca con Irene. DEVI:
@@ -41,36 +27,45 @@ export async function POST(req: Request) {
         7. MAI continuare la storia senza input di Irene
         8. MANTIENI LA COERENZA con tutto ciò che è stato detto prima
         9. RICORDA tutto il contesto precedente
+        10. PARLA SEMPRE IN ITALIANO
         
         FORMATO OBBLIGATORIO:
         - Descrizione IMMERSIVA della scena (frasi lunghe e ricche di dettagli)
         - Decidi cosa fa il mondo attorno a Irene
         - STOP e attendi risposta
 
-        Ecco la conversazione finora:
+        CONVERSAZIONE PRECEDENTE:
         ${conversationHistory}
 
         Marco:`;
 
-        // Log per debug
-        console.log("Final prompt:", systemPrompt);
-
         try {
-            const response = await inference.textGeneration({
-                model: "mistralai/Mistral-7B-Instruct-v0.2",
-                inputs: systemPrompt,
-                parameters: {
-                    max_new_tokens: 2500,
-                    temperature: 0.5,
-                    top_p: 0.9,
-                    return_full_text: false,
-                    stop: ["\nIrene:", "\n\n"]
-                }
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': process.env.ANTHROPIC_API_KEY,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: 'claude-3-opus-20240229',
+                    max_tokens: 2500,
+                    messages: [{
+                        role: 'user',
+                        content: systemPrompt
+                    }],
+                    temperature: 0.7
+                })
             });
 
-            console.log("AI Response:", response);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'AI Service error');
+            }
+
             return NextResponse.json({
-                content: response.generated_text || "Mi dispiace, non ho potuto generare una risposta."
+                content: data.content[0].text
             });
 
         } catch (inferenceError: unknown) {
