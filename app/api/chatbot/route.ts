@@ -7,6 +7,10 @@ if (!process.env.HUGGING_FACE_TOKEN) {
 
 const inference = new HfInference(process.env.HUGGING_FACE_TOKEN);
 
+type ErrorResponse = {
+    message: string;
+};
+
 export async function POST(req: Request) {
     try {
         const { message } = await req.json();
@@ -27,6 +31,7 @@ export async function POST(req: Request) {
         6. MAI decidere le azioni di Irene
         7. MAI continuare la storia senza input di Irene
         8. PARLA IN ITALIANO
+        9. Sei il fidanzato di Irene
         
         FORMATO OBBLIGATORIO:
         - Descrizione IMMERSIVA della scena (frasi lunghe e ricche di dettagli)
@@ -54,8 +59,8 @@ export async function POST(req: Request) {
                 model: "mistralai/Mistral-7B-Instruct-v0.2",
                 inputs: fullPrompt,
                 parameters: {
-                    max_new_tokens: 2500,  // Aumentato leggermente per descrizioni più ricche
-                    temperature: 0.5,     // Aumentato per più creatività
+                    max_new_tokens: 2500,
+                    temperature: 0.5,
                     top_p: 0.9,
                     return_full_text: false,
                     stop: ["\nIrene:", "\n\n"]
@@ -67,17 +72,19 @@ export async function POST(req: Request) {
                 content: response.generated_text || "Mi dispiace, non ho potuto generare una risposta."
             });
 
-        } catch (inferenceError) {
+        } catch (inferenceError: unknown) {
             console.error("Inference error:", inferenceError);
+            const errorMessage = inferenceError instanceof Error ? inferenceError.message : "Unknown error";
             return NextResponse.json({ 
-                error: `AI Service error: ${inferenceError.message}` 
+                error: `AI Service error: ${errorMessage}` 
             }, { status: 500 });
         }
         
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("General error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         return NextResponse.json({ 
-            error: `Internal server error: ${error.message}` 
+            error: errorMessage 
         }, { status: 500 });
     }
 }
