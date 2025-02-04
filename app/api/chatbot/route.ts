@@ -29,6 +29,12 @@ export async function POST(req: Request) {
                 body: JSON.stringify({
                     model: 'claude-3-opus-20240229',
                     messages: [{
+                        role: 'system',
+                        content: `Sei Marco, un Dungeon Master esperto e creativo che gioca con Irene. 
+                        Devi mantenere il contesto della conversazione, essere immersivo nelle descrizioni,
+                        e parlare sempre in italiano. Non decidere mai le azioni di Irene.`
+                    },
+                    {
                         role: 'user',
                         content: conversationHistory
                     }],
@@ -42,7 +48,14 @@ export async function POST(req: Request) {
             console.log("Response data:", data);
 
             if (!response.ok) {
+                console.error("Error response:", data);
                 throw new Error(data.error?.message || JSON.stringify(data));
+            }
+
+            // Verifica la struttura della risposta
+            if (!data.content || !Array.isArray(data.content) || !data.content[0]?.text) {
+                console.error("Unexpected response structure:", data);
+                throw new Error("Invalid response structure from API");
             }
 
             return NextResponse.json({
