@@ -65,7 +65,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 bg-[url('/dungeon.jpg')] bg-cover bg-center bg-fixed">
-      <div className="w-full max-w-4xl flex flex-col h-screen bg-black/50 backdrop-blur-sm rounded-lg p-4">
+      <div className="w-full max-w-4xl flex flex-col h-screen bg-emerald-900/40 backdrop-blur-sm rounded-lg p-4">
         <div 
           ref={chatContainerRef}
           className="flex-1 overflow-y-auto mb-4 space-y-4 p-4"
@@ -75,8 +75,8 @@ export default function Home() {
               key={i}
               className={`p-4 rounded-lg ${
                 message.role === "user"
-                  ? "bg-blue-500/90 text-white ml-auto"
-                  : "bg-gray-200/90 text-black"
+                  ? "bg-emerald-600/90 text-white ml-auto"
+                  : "bg-green-200/90 text-emerald-900"
               } max-w-[80%] ${
                 message.role === "user" ? "ml-auto" : "mr-auto"
               }`}
@@ -86,19 +86,19 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="sticky bottom-0 bg-black/50 p-4 rounded-lg">
+        <div className="sticky bottom-0 bg-emerald-900/50 p-4 rounded-lg">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Scrivi un messaggio..."
-              className="flex-1 p-2 border rounded bg-white/90"
+              className="flex-1 p-2 border rounded bg-green-50/90 text-emerald-900 placeholder-emerald-700/50 border-emerald-600/30 focus:outline-none focus:border-emerald-500"
               disabled={isLoading}
             />
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors disabled:bg-blue-300"
+              className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 transition-colors disabled:bg-emerald-400"
               disabled={isLoading}
             >
               {isLoading ? "Invio..." : "Invia"}
