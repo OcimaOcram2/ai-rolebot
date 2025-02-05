@@ -89,7 +89,7 @@ Marco:`;
                 headers: {
                     'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
                     'HTTP-Referer': 'https://ai-rolebot-fa1t2.vercel.app/',  // Il tuo dominio Vercel
-                    'X-Title': 'Marco DM',  // Nome della tua app
+                    'X-Title': 'Un DM per Sunshine',  // Nome della tua app
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
