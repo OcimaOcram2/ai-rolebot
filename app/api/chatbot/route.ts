@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-if (!process.env.TOGETHER_API_KEY) {
-    throw new Error("TOGETHER_API_KEY is not set");
+if (!process.env.OPENROUTER_API_KEY) {
+    throw new Error("OPENROUTER_API_KEY is not set");
 }
 
 export async function POST(req: Request) {
@@ -66,21 +66,28 @@ ${conversationHistory}]
 Marco:`;
 
         try {
-            const response = await fetch('https://api.together.xyz/v1/chat/completions', {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${process.env.TOGETHER_API_KEY}`,
+                    'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                    'HTTP-Referer': 'https://ai-rolebot-fa1t2.vercel.app/',  // Il tuo dominio Vercel
+                    'X-Title': 'Marco DM',  // Nome della tua app
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-                    messages: [{
-                        role: "user",
-                        content: systemPrompt
-                    }],
-                    temperature: 0.75,  // Leggermente aumentato per più creatività
-                    max_tokens: 2500,
-                    stop: ["\nIrene:", "\n\n", "[ISTRUZIONI", "[CONVERSAZIONE"]
+                    model: "mistralai/mixtral-8x7b-instruct",  // Modello gratuito di alta qualità
+                    messages: [
+                        {
+                            role: "system",
+                            content: "Sei Marco, un Dungeon Master esperto. Parla sempre in italiano."
+                        },
+                        {
+                            role: "user",
+                            content: systemPrompt
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1024
                 })
             });
 
