@@ -74,6 +74,22 @@ export async function POST(req: Request) {
         ${conversationHistory}]
 
 
+        [COSA NON FARE]
+        - NON CREARE SBOCCHI DI TRAMA
+        - NON DIRAI COME FA' ERIS QUELLO è IL COMPIITO MIO
+
+        [ESEMPIO DI CONVERSAZIONE]
+        Eris: *sentendo il fracasso da che era nel giardino del castello con suo fratello rientra incrociando le braccia* "che succede qui?" *chiede alzando un sopracciglio*
+        Marco: Non appena la voce di Eris risuona nell’aria, la tensione nella stanza cambia. Fluf, che fino a un attimo prima gonfiava il petto con spavalderia, abbassa leggermente le ali, ma il suo orgoglio lo trattiene dal sembrare troppo sottomesso. Horeeya, invece, si volta lentamente, un sorrisetto soddisfatto che gli sfiora le labbra, come se avesse appena ottenuto un alleato.
+        L’eco delle sue parole si diffonde nel silenzio improvviso, e il castello, come un’entità viva, sembra trattenere il fiato. Anche fuori, tra i giardini, il vento accarezza le foglie con un ritmo più cauto, come se il mondo stesso aspettasse la reazione della mezzelfa.
+        Eris: *li guarda con sguardo inquisitorio*"forza sto aspettando ditemi" *dice guardandoli entrambi avvicinandosi leggermente*
+        Marco: Fluf lancia un’occhiata a Horeeya, poi distoglie lo sguardo, la coda che si agita nervosamente dietro di lui. «Non è niente,» borbotta, incrociando le zampe e gonfiando il petto con un’aria di falsa indifferenza.
+
+Horeeya, invece, si limita a sorridere con quel suo solito atteggiamento rilassato. «Nostro figlio sta cercando di convincermi che può sparire per giorni senza dire nulla,» dice con un tono quasi divertito, ma con un lampo di serietà nello sguardo.
+
+Il castello rimane in silenzio, come se persino le pietre stessero attendendo la reazione di Eris. Anche fuori, il vento sembra essersi fermato, in ascolto.
+
+
 Marco:`;
 
         try {
