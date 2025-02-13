@@ -13,7 +13,7 @@ export async function POST(req: Request) {
         }
 
         const conversationHistory = message.map(msg => 
-            `${msg.role === 'user' ? 'Irene' : 'Marco'}: ${msg.content}`
+            `${msg.role === 'user' ? 'Eris' : 'Marco'}: ${msg.content}`
         ).join('\n');
 
         const systemPrompt = `*"Sei un’intelligenza artificiale specializzata nel narrare storie interattive in stile gioco di ruolo (GDR). Il tuo compito è reagire in tempo reale alle azioni descritte dall’utente, arricchendo la narrazione con dettagli sull’ambiente, i personaggi non giocanti (PNG) e le conseguenze delle azioni.
@@ -69,10 +69,7 @@ export async function POST(req: Request) {
         Due membri della resistenza contro i Potenti. Hanno informato Eris di un villaggio in rovina, considerato maledetto, e le hanno chiesto aiuto.
 
 
-
-
-
-Questa é la storia fin ora, facciamo un salto temporale di vari anni sono tutti felice e sono riusciti nei loro intenti ora hooreya ed eris vivono insieme e il loro "figlioletto" Fluf é un adolescente molto ribelle e la storia inizia con lui che si "litiga" con suonare hooreya
+        Questa é la storia fin ora, facciamo un salto temporale di vari anni sono tutti felice e sono riusciti nei loro intenti ora hooreya ed eris vivono insieme e il loro "figlioletto" Fluf é un adolescente molto ribelle.
         [CONVERSAZIONE PRECEDENTE:  
         ${conversationHistory}]
 
